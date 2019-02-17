@@ -279,7 +279,7 @@ class NumericalCircuit:
 
         # Qmax
         q_max = self.C_gen_bus.T * (self.generator_qmax / self.Sbase)
-        q_max += self.C_batt_bus.T * (self.battery_qmax/ self.Sbase)
+        q_max += self.C_batt_bus.T * (self.battery_qmax / self.Sbase)
 
         # Qmin
         q_min = self.C_gen_bus.T * (self.generator_qmin / self.Sbase)

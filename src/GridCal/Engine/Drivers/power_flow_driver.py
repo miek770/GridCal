@@ -193,6 +193,11 @@ class TapsControlMode(Enum):
     Iterative = "Iterative"
 
 
+class QLimitsMode(Enum):
+
+    Static = "Static"
+    Dynamic = "Dynamic"
+
 #######################################################################################
 # Power flow classes
 #######################################################################################
@@ -244,6 +249,9 @@ class PowerFlowOptions:
         **branch_impedance_tolerance_mode** (BranchImpedanceMode,
         BranchImpedanceMode.Specified): Type of modification of the branches impedance
 
+        **q_limits_mode** (QLimitsMode, QLimitsMode.Static): Whether the
+        :ref:`generators<generator>`' reactive power limits are fixed (Static) or
+        variable (Dynamic).
     """
 
     def __init__(self, solver_type: SolverType = SolverType.NR,
@@ -254,7 +262,8 @@ class PowerFlowOptions:
                  control_taps=TapsControlMode.NoControl,
                  multi_core=False, dispatch_storage=False,
                  control_p=False, apply_temperature_correction=False,
-                 branch_impedance_tolerance_mode=BranchImpedanceMode.Specified):
+                 branch_impedance_tolerance_mode=BranchImpedanceMode.Specified,
+                 q_limits_mode=QLimitsMode.Static):
 
         self.solver_type = solver_type
 
@@ -283,6 +292,8 @@ class PowerFlowOptions:
         self.apply_temperature_correction = apply_temperature_correction
 
         self.branch_impedance_tolerance_mode = branch_impedance_tolerance_mode
+
+        self.q_limits_mode = q_limits_mode
 
 
 class PowerFlowMP:
@@ -599,6 +610,9 @@ class PowerFlowMP:
                 methods.append(solver_type)
 
                 if converged:
+
+                    if self.options.q_limits_mode == QLimitsMode.Dynamic:
+                        circuit.update_q(voltage_solution)
 
                     # Check controls
                     if self.options.control_Q == ReactivePowerControlMode.Direct:

@@ -1660,9 +1660,11 @@ class Generator(EditableDevice):
 
         # minimum reactive power in MVAr
         self.Qmin = Qmin
+        self._qmin_eval = "-2"
 
         # Maximum reactive power in MVAr
         self.Qmax = Qmax
+        self._qmax_eval = "2"
 
         # Cost of operation €/MW
         self.Cost = op_cost
@@ -1695,6 +1697,18 @@ class Generator(EditableDevice):
 
         # list of variables of active power dispatch in a series of linear programs
         self.LPVar_P_prof = None
+
+    @property
+    def qmin_eval(self, context=None):
+        return eval(self._qmin_eval,
+                    {"max": max, "min": min, "sum": sum},
+                    {"x": context, "self": self})
+
+    @property
+    def qmax_eval(self, context=None):
+        return eval(self._qmax_eval,
+                    {"max": max, "min": min, "sum": sum},
+                    {"x": context, "self": self})
 
     def copy(self):
         """
